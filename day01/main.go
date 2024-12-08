@@ -1,26 +1,21 @@
-package main
+package day01
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"riemer/utils"
 	"sort"
 )
 
-func main() {
-	file, err := os.Open("input.txt")
-	check(err)
-	defer file.Close()
-
+func Process() {
 	var list1 = make([]int, 0, 1000)
 	var list2 = make([]int, 0, 1000)
 
 	// Read file input and fill list1 and list2
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
+	fileLines := utils.ReadFile("day01/input.txt")
+	for _, line := range fileLines {
 		var ph [2]int
-		_, err := fmt.Sscanf(scanner.Text(), "%d %d", &ph[0], &ph[1])
-		check(err)
+		_, err := fmt.Sscanf(line, "%d %d", &ph[0], &ph[1])
+		utils.Check(err)
 		list1 = append(list1, ph[0])
 		list2 = append(list2, ph[1])
 	}
@@ -31,15 +26,17 @@ func main() {
 	var distanceSum uint64 = 0
 	var similaritySum uint64 = 0
 	for i := 0; i < len(list1); i++ {
-		distanceSum += uint64(abs(list1[i] - list2[i]))
+		distanceSum += uint64(utils.Abs(list1[i] - list2[i]))
 		similaritySum += uint64(countOccurrences(list2, list1[i]) * list1[i])
 	}
 
 	// Answers for Day 1
+	fmt.Println("Day 1 Results")
 	fmt.Println("Distance", distanceSum)
 	fmt.Println("Similarity", similaritySum)
 }
 
+// Returns the amount of occurrences of `target` in `slice`
 func countOccurrences(slice []int, target int) int {
 	first := findFirst(slice, target)
 	if first == -1 {
@@ -49,8 +46,8 @@ func countOccurrences(slice []int, target int) int {
 	return last - first + 1
 }
 
+// findFirst - Uses binary search to get the first occurrence of `target` in `slice`
 func findFirst(slice []int, target int) int {
-	// binary search
 	low, high := 0, len(slice)-1
 	result := -1
 	for low <= high {
@@ -67,6 +64,7 @@ func findFirst(slice []int, target int) int {
 	return result
 }
 
+// findLast - Find the last occurrence of `target` in `slice`. Uses simple iteration
 func findLast(slice []int, target int, start int) int {
 	for i := start; i < len(slice); i++ {
 		if slice[i] != target {
@@ -74,17 +72,4 @@ func findLast(slice []int, target int, start int) int {
 		}
 	}
 	return len(slice) - 1
-}
-
-func abs(i int) int {
-	if i > 0 {
-		return i
-	}
-	return -i
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
 }

@@ -1,30 +1,35 @@
-package main
+package day03
 
 import (
 	"fmt"
 	"os"
 	"regexp"
+	"riemer/utils"
 	"strconv"
 )
 
-func main() {
-	fmt.Println("Day 3 Part 1")
-	process(false)
+func Process() {
+	part1 := processSub(false)
+	part2 := processSub(true)
 
-	fmt.Println("Day 3 Part 2")
-	process(true)
+	fmt.Println("Day 3 Results")
+	fmt.Println("Part1", part1)
+	fmt.Println("Part2", part2)
 }
 
-func process(strip bool) {
-	b, err := os.ReadFile("input.txt")
-	check(err)
+func processSub(strip bool) int {
+	// Read the file as one string
+	b, err := os.ReadFile("day03/input.txt")
+	utils.Check(err)
 	input := string(b)
 
+	// If requested strip everything between `don't()` and `do()`
 	if strip {
 		r := regexp.MustCompile(`don't\(\).*?do\(\)`)
 		input = r.ReplaceAllString(input, "")
 	}
 
+	//
 	multiplicationSum := 0
 	r := regexp.MustCompile(`mul\((\d+),(\d+)\)`)
 	matches := r.FindAllStringSubmatch(input, -1)
@@ -34,11 +39,5 @@ func process(strip bool) {
 		multiplicationSum += num1 * num2
 	}
 
-	fmt.Println(multiplicationSum)
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
+	return multiplicationSum
 }

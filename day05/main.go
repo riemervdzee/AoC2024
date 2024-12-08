@@ -1,24 +1,23 @@
-package main
+package day05
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"riemer/utils"
 	"slices"
 	"sort"
 	"strconv"
 	"strings"
 )
 
-func main() {
-	lines := readFile("input.txt")
+func Process() {
+	lines := utils.ReadFile("day05/input.txt")
 	ruleLines, updateLines := splitLines(lines)
 	ruleMap := generateRuleMap(ruleLines)
 
 	totalPart1 := 0
 	totalPart2 := 0
 	for _, updateLine := range updateLines {
-		update := stringArrayToIntArray(strings.Split(updateLine, ","))
+		update := utils.StringArrayToIntArray(strings.Split(updateLine, ","))
 		correct := sortUpdate(ruleMap, update)
 		middle := len(update) / 2
 
@@ -30,11 +29,9 @@ func main() {
 		}
 	}
 
-	fmt.Println("Day 5 Part 1")
-	fmt.Println(totalPart1)
-
-	fmt.Println("Day 5 Part 2")
-	fmt.Println(totalPart2)
+	fmt.Println("Day 5 Results")
+	fmt.Println("Part1", totalPart1)
+	fmt.Println("Part2", totalPart2)
 }
 
 // sortUpdate - Sorts an update according to the rulebook and returns whether it was correct in the first place or not
@@ -83,35 +80,4 @@ func splitLines(lines []string) ([]string, []string) {
 		}
 	}
 	panic("No Empty String delimiter found!")
-}
-
-// readFile - Reads the file as lines
-func readFile(filename string) []string {
-	file, err := os.Open(filename)
-	check(err)
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines
-}
-
-// Helper func, converts a []string to []int
-func stringArrayToIntArray(stringArray []string) []int {
-	integers := make([]int, 0, len(stringArray))
-	for _, part := range stringArray {
-		num, err := strconv.Atoi(part)
-		check(err)
-		integers = append(integers, num)
-	}
-	return integers
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
 }

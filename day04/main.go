@@ -1,9 +1,10 @@
-package main
+package day04
 
 import (
 	"bufio"
 	"fmt"
 	"os"
+	"riemer/utils"
 )
 
 type Vector [2]int
@@ -30,16 +31,17 @@ var directionsPart1 = []Vector{
 	DIR_DOWN_RIGHT,
 }
 
-func main() {
-	fmt.Println("Day 4 Part 1")
-	processPart1()
+func Process() {
+	part1 := processPart1()
+	part2 := processPart2()
 
-	fmt.Println("Day 4 Part 2")
-	processPart2()
+	fmt.Println("Day 4 Results")
+	fmt.Println("Part1", part1)
+	fmt.Println("Part2", part2)
 }
 
-func processPart1() {
-	grid := readFileAsGrid("input.txt")
+func processPart1() int {
+	grid := readFileAsGrid("day04/input.txt")
 
 	total := 0
 	for y, row := range grid {
@@ -54,11 +56,11 @@ func processPart1() {
 			}
 		}
 	}
-	fmt.Println(total)
+	return total
 }
 
-func processPart2() {
-	grid := readFileAsGrid("input.txt")
+func processPart2() int {
+	grid := readFileAsGrid("day04/input.txt")
 
 	total := 0
 	for y, row := range grid {
@@ -80,7 +82,7 @@ func processPart2() {
 			}
 		}
 	}
-	fmt.Println(total)
+	return total
 }
 
 // scanForString - Checks if the search needle continues at `position` in the `direction` in the grid
@@ -115,7 +117,7 @@ func validPosition(grid [][]byte, position Vector) bool {
 // readFileAsGrid - Reads the file as an 2-dimensional grid array
 func readFileAsGrid(filename string) [][]byte {
 	file, err := os.Open(filename)
-	check(err)
+	utils.Check(err)
 	defer file.Close()
 
 	var grid [][]byte
@@ -125,10 +127,4 @@ func readFileAsGrid(filename string) [][]byte {
 		grid = append(grid, []byte(line))
 	}
 	return grid
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
 }
