@@ -57,15 +57,6 @@ func simulateGuard(grid utils.Grid, detectLoops bool) (bool, int) {
 			break
 		}
 
-		// Loop detection
-		if detectLoops {
-			guardKey := (newPosition[0] << 20) | (newPosition[1] << 12) | ((guard.direction[0] + 2) << 4) | (guard.direction[1] + 2)
-			if visited[guardKey] {
-				return true, score
-			}
-			visited[guardKey] = true
-		}
-
 		// Progress Guard movements
 		lookahead := grid[newPosition[1]][newPosition[0]]
 		if lookahead != '#' {
@@ -75,6 +66,15 @@ func simulateGuard(grid utils.Grid, detectLoops bool) (bool, int) {
 				grid[newPosition[1]][newPosition[0]] = 'X'
 			}
 		} else {
+			// Loop detection
+			if detectLoops {
+				guardKey := (newPosition[0] << 20) | (newPosition[1] << 12) | ((guard.direction[0] + 2) << 4) | (guard.direction[1] + 2)
+				if visited[guardKey] {
+					return true, score
+				}
+				visited[guardKey] = true
+			}
+
 			guard.direction = utils.VectorTurnRight(guard.direction)
 		}
 	}
