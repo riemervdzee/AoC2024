@@ -48,7 +48,7 @@ func processPart2() int {
 func simulateGuard(grid utils.Grid, detectLoops bool) (bool, int) {
 	guard := findGuard(grid)
 	score := 1
-	visited := map[string]bool{}
+	visited := map[int]bool{}
 
 	for {
 		// Set new position and check if still in bounds of the grid
@@ -59,7 +59,7 @@ func simulateGuard(grid utils.Grid, detectLoops bool) (bool, int) {
 
 		// Loop detection
 		if detectLoops {
-			guardKey := fmt.Sprintf("%d,%d|%d,%d", newPosition[0], newPosition[1], guard.direction[0], guard.direction[1])
+			guardKey := (newPosition[0] << 20) | (newPosition[1] << 12) | ((guard.direction[0] + 2) << 4) | (guard.direction[1] + 2)
 			if visited[guardKey] {
 				return true, score
 			}
