@@ -60,12 +60,7 @@ func generateRuleMap(rules []string) map[int][]int {
 		split := strings.Split(rule, "|")
 		key, _ := strconv.Atoi(split[0])
 		value, _ := strconv.Atoi(split[1])
-		_, ok := ruleMap[key]
-		if ok {
-			ruleMap[key] = append(ruleMap[key], value)
-		} else {
-			ruleMap[key] = []int{value}
-		}
+		ruleMap[key] = append(ruleMap[key], value)
 	}
 	return ruleMap
 }

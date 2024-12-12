@@ -65,13 +65,8 @@ func getNodes(grid utils.Grid) NodeMap {
 	for y, row := range grid {
 		for x, cell := range row {
 			if cell != '.' {
-				_, ok := nodes[cell]
 				vector := utils.Vector{x, y}
-				if ok {
-					nodes[cell] = append(nodes[cell], vector)
-				} else {
-					nodes[cell] = []utils.Vector{vector}
-				}
+				nodes[cell] = append(nodes[cell], vector)
 			}
 		}
 	}
