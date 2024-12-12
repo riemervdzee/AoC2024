@@ -14,7 +14,10 @@ import (
 )
 
 func main() {
-	days := []func(){day01.Process, day02.Process, day03.Process, day04.Process, day05.Process, day06.Process, day07.Process, day08.Process}
+	days := []func(){
+		day01.Process, day02.Process, day03.Process, day04.Process, day05.Process,
+		day06.Process, day07.Process, day08.Process,
+	}
 	//days := []func(){}
 	totalStart := time.Now()
 
