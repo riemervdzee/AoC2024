@@ -8,12 +8,13 @@ import (
 	"riemer/day04"
 	"riemer/day05"
 	"riemer/day06"
+	"riemer/day07"
 	"time"
 )
 
 func main() {
-	days := []func(){day01.Process, day02.Process, day03.Process, day04.Process, day05.Process, day06.Process}
-	//days := []func(){day06.Process}
+	days := []func(){day01.Process, day02.Process, day03.Process, day04.Process, day05.Process, day06.Process, day07.Process}
+	//days := []func(){day07.Process}
 	totalStart := time.Now()
 
 	for _, function := range days {
