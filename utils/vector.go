@@ -29,6 +29,11 @@ func VectorAdd(a, b Vector) Vector {
 	return Vector{a[0] + b[0], a[1] + b[1]}
 }
 
+// VectorSub - Subtracts vector b from vector a
+func VectorSub(a, b Vector) Vector {
+	return Vector{a[0] - b[0], a[1] - b[1]}
+}
+
 // VectorTurnRight - Turn a vector 90 degrees to the right
 func VectorTurnRight(a Vector) Vector {
 	return Vector{-a[1], a[0]}
