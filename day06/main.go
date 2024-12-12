@@ -11,37 +11,29 @@ type Guard struct {
 }
 
 func Process() {
-	total1 := processPart1()
-	total2 := processPart2()
-	fmt.Println("Day 6 Results")
-	fmt.Println("Part1", total1)
-	fmt.Println("Part2", total2)
-}
-
-func processPart1() int {
 	grid := utils.ReadFileAsGrid("day06/input.txt")
-	_, total := simulateGuard(grid, false)
-	return total
-}
+	part1Grid := copy2DByteSlice(grid)
 
-func processPart2() int {
-	grid := utils.ReadFileAsGrid("day06/input.txt")
+	_, part1Total := simulateGuard(part1Grid, false)
 	guard := findGuard(grid)
 
-	validPositions := 0
-	for y, row := range grid {
+	part2Total := 0
+	for y, row := range part1Grid {
 		for x, cell := range row {
-			if cell == '.' && (x != guard.position[0] || y != guard.position[1]) {
+			if cell == 'X' && (x != guard.position[0] || y != guard.position[1]) {
 				grid[y][x] = '#'
 				loop, _ := simulateGuard(grid, true)
 				if loop {
-					validPositions++
+					part2Total++
 				}
-				grid[y][x] = '.'
+				grid[y][x] = 'X'
 			}
 		}
 	}
-	return validPositions
+
+	fmt.Println("Day 6 Results")
+	fmt.Println("Part1", part1Total)
+	fmt.Println("Part2", part2Total)
 }
 
 // simulateGuard - Simulates the movements of a guard inside a grid
@@ -95,4 +87,15 @@ func findGuard(grid utils.Grid) Guard {
 		}
 	}
 	panic("Guard not found")
+}
+
+// copy2DByteSlice - Copies the input [][]byte slice to a new slice
+func copy2DByteSlice(src [][]byte) [][]byte {
+	dst := make([][]byte, len(src))
+	for i := range src {
+		dst[i] = make([]byte, len(src[i]))
+		copy(dst[i], src[i])
+	}
+
+	return dst
 }
