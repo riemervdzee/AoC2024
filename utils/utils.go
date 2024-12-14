@@ -20,6 +20,11 @@ func ReadFile(filename string) []string {
 	return lines
 }
 
+func StringToInt(s string) int {
+	num, _ := strconv.Atoi(s)
+	return num
+}
+
 // StringArrayToIntArray - Converts a []string to []int
 func StringArrayToIntArray(stringArray []string) []int {
 	integers := make([]int, 0, len(stringArray))

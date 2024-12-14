@@ -5,7 +5,6 @@ import (
 	"riemer/utils"
 	"slices"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -58,8 +57,8 @@ func generateRuleMap(rules []string) map[int][]int {
 	ruleMap := make(map[int][]int)
 	for _, rule := range rules {
 		split := strings.Split(rule, "|")
-		key, _ := strconv.Atoi(split[0])
-		value, _ := strconv.Atoi(split[1])
+		key := utils.StringToInt(split[0])
+		value := utils.StringToInt(split[1])
 		ruleMap[key] = append(ruleMap[key], value)
 	}
 	return ruleMap

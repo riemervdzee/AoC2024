@@ -6,17 +6,17 @@ import (
 )
 
 func Process() {
-	part1 := processPart1()
-	part2 := processPart2()
+	grid := utils.ReadFileAsGrid("day04/input.txt")
+
+	part1 := processPart1(grid)
+	part2 := processPart2(grid)
 
 	fmt.Println("Day 4 Results")
 	fmt.Println("Part1", part1)
 	fmt.Println("Part2", part2)
 }
 
-func processPart1() int {
-	grid := utils.ReadFileAsGrid("day04/input.txt")
-
+func processPart1(grid utils.Grid) int {
 	total := 0
 	for y, row := range grid {
 		for x, cell := range row {
@@ -33,9 +33,7 @@ func processPart1() int {
 	return total
 }
 
-func processPart2() int {
-	grid := utils.ReadFileAsGrid("day04/input.txt")
-
+func processPart2(grid utils.Grid) int {
 	total := 0
 	for y, row := range grid {
 		for x, cell := range row {
@@ -64,8 +62,8 @@ func scanForString(grid utils.Grid, needle string, position utils.Vector, direct
 	newPosition := utils.VectorAdd(position, direction)
 	if utils.GridValidPosition(grid, newPosition) && grid[newPosition[1]][newPosition[0]] == needle[0] {
 		// Check if we have a search-needle remaining, use recursion. Otherwise return 1 as we completed the search
-		newNeedle := needle[1:]
-		if len(newNeedle) > 0 {
+		if len(needle) > 1 {
+			newNeedle := needle[1:]
 			return scanForString(grid, newNeedle, newPosition, direction)
 		}
 		return 1

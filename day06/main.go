@@ -12,13 +12,12 @@ type Guard struct {
 
 func Process() {
 	grid := utils.ReadFileAsGrid("day06/input.txt")
-	part1Grid := copy2DByteSlice(grid)
 
-	_, part1Total := simulateGuard(part1Grid, false)
+	_, part1Total := simulateGuard(grid, false)
 	guard := findGuard(grid)
 
 	part2Total := 0
-	for y, row := range part1Grid {
+	for y, row := range grid {
 		for x, cell := range row {
 			if cell == 'X' && (x != guard.position[0] || y != guard.position[1]) {
 				grid[y][x] = '#'
@@ -87,15 +86,4 @@ func findGuard(grid utils.Grid) Guard {
 		}
 	}
 	panic("Guard not found")
-}
-
-// copy2DByteSlice - Copies the input [][]byte slice to a new slice
-func copy2DByteSlice(src [][]byte) [][]byte {
-	dst := make([][]byte, len(src))
-	for i := range src {
-		dst[i] = make([]byte, len(src[i]))
-		copy(dst[i], src[i])
-	}
-
-	return dst
 }

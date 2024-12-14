@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"riemer/utils"
 	"sort"
+	"strings"
 )
 
 func Process() {
@@ -13,21 +14,21 @@ func Process() {
 	// Read file input and fill list1 and list2
 	fileLines := utils.ReadFile("day01/input.txt")
 	for _, line := range fileLines {
-		var ph [2]int
-		_, err := fmt.Sscanf(line, "%d %d", &ph[0], &ph[1])
-		utils.Check(err)
-		list1 = append(list1, ph[0])
-		list2 = append(list2, ph[1])
+		parts := strings.Fields(line)
+		i1 := utils.StringToInt(parts[0])
+		i2 := utils.StringToInt(parts[1])
+		list1 = append(list1, i1)
+		list2 = append(list2, i2)
 	}
 	sort.Ints(list1)
 	sort.Ints(list2)
 
 	// Loop through list and get sum of the distance and similarities
-	var distanceSum uint64 = 0
-	var similaritySum uint64 = 0
+	distanceSum := 0
+	similaritySum := 0
 	for i := 0; i < len(list1); i++ {
-		distanceSum += uint64(utils.Abs(list1[i] - list2[i]))
-		similaritySum += uint64(countOccurrences(list2, list1[i]) * list1[i])
+		distanceSum += utils.Abs(list1[i] - list2[i])
+		similaritySum += countOccurrences(list2, list1[i]) * list1[i]
 	}
 
 	// Answers for Day 1

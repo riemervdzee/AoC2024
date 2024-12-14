@@ -1,13 +1,22 @@
 package utils
 
+import (
+	"bufio"
+	"os"
+)
+
 type Grid [][]byte
 
 // ReadFileAsGrid - Reads the file as an 2-dimensional grid array
 func ReadFileAsGrid(filename string) Grid {
-	lines := ReadFile(filename)
+	file, err := os.Open(filename)
+	Check(err)
+	defer file.Close()
+
 	var grid Grid
-	for _, line := range lines {
-		grid = append(grid, []byte(line))
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		grid = append(grid, []byte(scanner.Text()))
 	}
 	return grid
 }
