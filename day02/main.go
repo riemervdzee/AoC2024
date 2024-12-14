@@ -39,7 +39,7 @@ func Process() {
 
 	fmt.Println("Day 2 Results")
 	fmt.Println("Strict", safeStrictCount)
-	fmt.Println("Damped", safeDampedCount)
+	fmt.Println("Part2", safeDampedCount)
 }
 
 // checkSlopeSlice - returns whether the input slice meets the slope criteria
