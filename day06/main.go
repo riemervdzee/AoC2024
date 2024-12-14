@@ -3,6 +3,8 @@ package day06
 import (
 	"fmt"
 	"riemer/utils"
+	"sync"
+	"sync/atomic"
 )
 
 type Guard struct {
@@ -16,17 +18,24 @@ func Process() {
 
 	_, part1Total := simulateGuard(grid, guard, false, utils.Vector{-1, -1})
 
-	part2Total := 0
+	var part2Total int32
+	var wg sync.WaitGroup
+
 	for y, row := range grid {
 		for x, cell := range row {
 			if cell == 'X' && (x != guard.position[0] || y != guard.position[1]) {
-				loop, _ := simulateGuard(grid, guard, true, utils.Vector{x, y})
-				if loop {
-					part2Total++
-				}
+				wg.Add(1)
+				go func(x, y int) {
+					defer wg.Done()
+					loop, _ := simulateGuard(grid, guard, true, utils.Vector{x, y})
+					if loop {
+						atomic.AddInt32(&part2Total, 1)
+					}
+				}(x, y)
 			}
 		}
 	}
+	wg.Wait()
 
 	fmt.Println("Day 6 Results")
 	fmt.Println("Part1", part1Total)
