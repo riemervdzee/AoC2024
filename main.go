@@ -19,7 +19,7 @@ func main() {
 		day01.Process, day02.Process, day03.Process, day04.Process, day05.Process,
 		day06.Process, day07.Process, day08.Process, day09.Process,
 	}
-	//days := []func(){}
+	//days := []func(){day09.Process,}
 	totalStart := time.Now()
 
 	for _, function := range days {

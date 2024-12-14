@@ -16,15 +16,15 @@ const emptySpace = -1
 
 func Process() {
 	lines := utils.ReadFile("day09/input.txt")
-	fs1 := expandFilesystem(lines[0])
-	fs2 := fs1
+	fs := expandFilesystem(lines[0])
 	files := identifyFiles(lines[0])
 
-	fs1 = defragmentFileSystemPart1(fs1)
-	part1Total := calculateFilesystemHash(fs1)
+	defragmentFileSystemPart1(fs)
+	part1Total := calculateFilesystemHash(fs)
 
-	fs2 = defragmentFileSystemPart2(fs2, files)
-	part2Total := calculateFilesystemHash(fs2)
+	fs = expandFilesystem(lines[0])
+	defragmentFileSystemPart2(fs, files)
+	part2Total := calculateFilesystemHash(fs)
 
 	fmt.Println("Day 9 Results")
 	fmt.Println("Part1", part1Total)
