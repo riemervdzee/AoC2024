@@ -5,23 +5,35 @@ import (
 	"riemer/utils"
 	"slices"
 	"strings"
+	"sync"
+	"sync/atomic"
 )
 
 func Process() {
 	lines := utils.ReadFile("day07/input.txt")
-	part1Total := 0
-	part2Total := 0
+
+	var part1Total, part2Total int64
+	var wg sync.WaitGroup
+
 	for _, line := range lines {
 		stripped := strings.Replace(line, ":", "", 1)
 		args := utils.StringArrayToIntArray(strings.Fields(stripped))
 
-		if solve(args[0], args[2:], args[1:2], false) {
-			part1Total += args[0]
-		}
-		if solve(args[0], args[2:], args[1:2], true) {
-			part2Total += args[0]
-		}
+		wg.Add(2)
+		go func(args []int) {
+			defer wg.Done()
+			if solve(args[0], args[2:], args[1:2], false) {
+				atomic.AddInt64(&part1Total, int64(args[0]))
+			}
+		}(args)
+		go func(args []int) {
+			defer wg.Done()
+			if solve(args[0], args[2:], args[1:2], true) {
+				atomic.AddInt64(&part2Total, int64(args[0]))
+			}
+		}(args)
 	}
+	wg.Wait()
 
 	fmt.Println("Day 7 Results")
 	fmt.Println("Part1", part1Total)
@@ -41,13 +53,20 @@ func solve(goal int, args []int, results []int, concat bool) bool {
 	}
 	resultsNew := make([]int, 0, len(results)*lenMul)
 
-	// Fill resultsNew where we do all requested operands (add, multiplication, concat if requested)
+	// Fill resultsNew where we do all requested operands (add, multiplication, concat if requested).
 	input := args[0]
 	for i := 0; i < len(results); i++ {
-		resultsNew = append(resultsNew, results[i]+input)
-		resultsNew = append(resultsNew, results[i]*input)
+		// Only add if the result hasn't reached the goal yet
+		if r := results[i] + input; r <= goal {
+			resultsNew = append(resultsNew, r)
+		}
+		if r := results[i] * input; r <= goal {
+			resultsNew = append(resultsNew, r)
+		}
 		if concat {
-			resultsNew = append(resultsNew, concatint(results[i], input))
+			if r := concatInt(results[i], input); r <= goal {
+				resultsNew = append(resultsNew, r)
+			}
 		}
 	}
 
@@ -56,7 +75,7 @@ func solve(goal int, args []int, results []int, concat bool) bool {
 }
 
 // Fast contacting of 2 integers
-func concatint(a int, b int) int {
+func concatInt(a int, b int) int {
 	if b < 10 {
 		return a*10 + b
 	} else if b < 100 {
