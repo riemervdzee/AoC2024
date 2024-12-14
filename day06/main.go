@@ -12,20 +12,18 @@ type Guard struct {
 
 func Process() {
 	grid := utils.ReadFileAsGrid("day06/input.txt")
-
-	_, part1Total := simulateGuard(grid, false)
 	guard := findGuard(grid)
+
+	_, part1Total := simulateGuard(grid, guard, false, utils.Vector{-1, -1})
 
 	part2Total := 0
 	for y, row := range grid {
 		for x, cell := range row {
 			if cell == 'X' && (x != guard.position[0] || y != guard.position[1]) {
-				grid[y][x] = '#'
-				loop, _ := simulateGuard(grid, true)
+				loop, _ := simulateGuard(grid, guard, true, utils.Vector{x, y})
 				if loop {
 					part2Total++
 				}
-				grid[y][x] = 'X'
 			}
 		}
 	}
@@ -36,8 +34,7 @@ func Process() {
 }
 
 // simulateGuard - Simulates the movements of a guard inside a grid
-func simulateGuard(grid utils.Grid, detectLoops bool) (bool, int) {
-	guard := findGuard(grid)
+func simulateGuard(grid utils.Grid, guard Guard, detectLoops bool, obstacle utils.Vector) (bool, int) {
 	score := 1
 	visited := map[int]bool{}
 
@@ -50,7 +47,7 @@ func simulateGuard(grid utils.Grid, detectLoops bool) (bool, int) {
 
 		// Progress Guard movements
 		lookahead := grid[newPosition[1]][newPosition[0]]
-		if lookahead != '#' {
+		if lookahead != '#' && !utils.VectorCompare(newPosition, obstacle) {
 			guard.position = newPosition
 			if !detectLoops && lookahead != 'X' {
 				score++

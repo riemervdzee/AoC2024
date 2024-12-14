@@ -24,6 +24,11 @@ var AllDirections = []Vector{
 	DirDownRight,
 }
 
+// VectorCompare - True if both vectors have the same position
+func VectorCompare(a, b Vector) bool {
+	return a[0] == b[0] && a[1] == b[1]
+}
+
 // VectorAdd - Simply adds to 2 vectors and return it
 func VectorAdd(a, b Vector) Vector {
 	return Vector{a[0] + b[0], a[1] + b[1]}
