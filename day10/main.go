@@ -39,8 +39,7 @@ func findTrailHeadCount(grid utils.Grid, start utils.Vector) (int, int) {
 		x := queue[0]
 		queue = queue[1:]
 
-		directions := []utils.Vector{utils.DirUp, utils.DirDown, utils.DirLeft, utils.DirRight}
-		for _, direction := range directions {
+		for _, direction := range utils.FourDirections {
 			distance := x.dis + 1
 			newPosition := utils.VectorAdd(x.pos, direction)
 

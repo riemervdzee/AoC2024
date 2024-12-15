@@ -24,6 +24,13 @@ var AllDirections = []Vector{
 	DirDownRight,
 }
 
+var FourDirections = []Vector{
+	DirUp,
+	DirDown,
+	DirLeft,
+	DirRight,
+}
+
 // VectorCompare - True if both vectors have the same position
 func VectorCompare(a, b Vector) bool {
 	return a[0] == b[0] && a[1] == b[1]
