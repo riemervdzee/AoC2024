@@ -11,13 +11,14 @@ import (
 	"riemer/day07"
 	"riemer/day08"
 	"riemer/day09"
+	"riemer/day10"
 	"time"
 )
 
 func main() {
 	days := []func(){
 		day01.Process, day02.Process, day03.Process, day04.Process, day05.Process,
-		day06.Process, day07.Process, day08.Process, day09.Process,
+		day06.Process, day07.Process, day08.Process, day09.Process, day10.Process,
 	}
 	//days := []func(){day09.Process,}
 	totalStart := time.Now()
