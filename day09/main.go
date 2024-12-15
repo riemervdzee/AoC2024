@@ -7,9 +7,11 @@ import (
 )
 
 type File struct {
-	id    int
-	start int
-	size  int
+	id, start, size int
+}
+
+type EmptySpace struct {
+	start, size int
 }
 
 const emptySpace = -1
@@ -17,13 +19,13 @@ const emptySpace = -1
 func Process() {
 	lines := utils.ReadFile("day09/input.txt")
 	fs := expandFilesystem(lines[0])
-	files := identifyFiles(lines[0])
+	files, emptyspaces := identifyFiles(lines[0])
 
 	defragmentFileSystemPart1(fs)
 	part1Total := calculateFilesystemHash(fs)
 
 	fs = expandFilesystem(lines[0])
-	defragmentFileSystemPart2(fs, files)
+	defragmentFileSystemPart2(fs, files, emptyspaces)
 	part2Total := calculateFilesystemHash(fs)
 
 	fmt.Println("Day 9 Results")
@@ -56,19 +58,23 @@ func defragmentFileSystemPart1(filesystem []int) []int {
 	return filesystem
 }
 
-func defragmentFileSystemPart2(filesystem []int, files []File) []int {
+func defragmentFileSystemPart2(filesystem []int, files []File, emptySpaces []EmptySpace) []int {
 	// Sort files DESC
 	sort.Slice(files, func(i, j int) bool {
 		return files[i].id > files[j].id
 	})
 
 	for _, file := range files {
-		freeSpaceStart := findFreeSpace(filesystem, file.size)
-
-		if freeSpaceStart != -1 && freeSpaceStart < file.start {
-			copy(filesystem[freeSpaceStart:freeSpaceStart+file.size], filesystem[file.start:file.start+file.size])
-			for i := file.start; i < file.start+file.size; i++ {
-				filesystem[i] = emptySpace
+		for i, space := range emptySpaces {
+			if space.size >= file.size && space.start < file.start {
+				copy(filesystem[space.start:space.start+file.size], filesystem[file.start:file.start+file.size])
+				for j := file.start; j < file.start+file.size; j++ {
+					filesystem[j] = emptySpace
+				}
+				// Update emptySpaces
+				emptySpaces[i].size -= file.size
+				emptySpaces[i].start += file.size
+				break
 			}
 		}
 	}
@@ -76,40 +82,29 @@ func defragmentFileSystemPart2(filesystem []int, files []File) []int {
 	return filesystem
 }
 
-// findFreeSpace - find the most left free space available for the given size
-func findFreeSpace(filesystem []int, size int) int {
-	count := 0
-	for i, value := range filesystem {
-		if value == emptySpace {
-			count++
-			if count == size {
-				return i - size + 1
-			}
-		} else {
-			count = 0
-		}
-	}
-	return -1
-}
-
-// identifyFiles - parses the input string and returns it as an array of File info
-func identifyFiles(input string) []File {
+// identifyFiles - parses the input string and returns it as arrays of File and EmptySpace info
+func identifyFiles(input string) ([]File, []EmptySpace) {
 	var files []File
-	fileId := 0
-	start := 0
+	var emptySpaces []EmptySpace
+	fileId, start := 0, 0
 
 	for i := 0; i < len(input); i += 2 {
 		size := int(input[i] - '0')
 		files = append(files, File{id: fileId, start: start, size: size})
 		fileId++
 		start += size
-		// Skip free space
+
+		// Identify empty space
 		if i+1 < len(input) {
-			start += int(input[i+1] - '0')
+			emptySize := int(input[i+1] - '0')
+			if emptySize > 0 {
+				emptySpaces = append(emptySpaces, EmptySpace{start, emptySize})
+			}
+			start += emptySize
 		}
 	}
 
-	return files
+	return files, emptySpaces
 }
 
 // expandFilesystem - parses the input string and expands it into the filesystem
