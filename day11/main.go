@@ -35,7 +35,8 @@ func blinkTimes(stoneMap StoneMap, amount int) StoneMap {
 
 // blink - processes each stone group and returns a new StoneMap
 func blink(stones StoneMap) StoneMap {
-	ret := make(StoneMap)
+	estimatedSize := int(float32(len(stones)) * 1.5)
+	ret := make(StoneMap, estimatedSize)
 	for stone, count := range stones {
 		newStones := processStone(stone)
 		ret[newStones[0]] += count
