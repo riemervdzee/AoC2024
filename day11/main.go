@@ -2,56 +2,72 @@ package day11
 
 import (
 	"fmt"
+	"math"
 	"riemer/utils"
-	"strconv"
 	"strings"
 )
+
+// StoneMap - Instead of a big list, we use Maps with as key the stone number, and the value as the counts
+type StoneMap map[int]int
 
 func Process() {
 	lines := utils.ReadFile("day11/input.txt")
 	blinkTimesP1 := 25
-	//blinkTimesP2 := 75
+	blinkTimesP2 := 75
 	stones := utils.StringArrayToIntArray(strings.Fields(lines[0]))
+	stoneMap := generateStoneMap(stones)
 
-	stones = blinkTimes(stones, blinkTimesP1)
+	stoneMap = blinkTimes(stoneMap, blinkTimesP1)
 	fmt.Println("Day 11 Results")
-	fmt.Println("Part1", len(stones))
+	fmt.Println("Part1", countStoneMap(stoneMap))
 
-	//blinkTimes(stones, blinkTimesP2-blinkTimesP1)
-	//fmt.Println("Part2", len(stones))
+	stoneMap = blinkTimes(stoneMap, blinkTimesP2-blinkTimesP1)
+	fmt.Println("Part2", countStoneMap(stoneMap))
 }
 
-func blinkTimes(stones []int, amount int) []int {
+// blinkTimes - just blink X times
+func blinkTimes(stoneMap StoneMap, amount int) StoneMap {
 	for i := 0; i < amount; i++ {
-		stones = blink(stones)
+		stoneMap = blink(stoneMap)
 	}
-	return stones
+	return stoneMap
 }
 
-func blink(stones []int) []int {
-	for i, stone := range stones {
+// blink - processes each stone group and returns a new StoneMap
+func blink(stones StoneMap) StoneMap {
+	ret := make(StoneMap)
+	for stone, count := range stones {
 		newStones := processStone(stone)
-		stones[i] = newStones[0]
+		ret[newStones[0]] += count
 		if len(newStones) > 1 {
-			stones = append(stones, newStones[1])
+			ret[newStones[1]] += count
 		}
 	}
-	return stones
+	return ret
 }
 
+// processStone -  processes a single stone
 func processStone(num int) []int {
 	if num == 0 {
 		return []int{1}
 	}
-	if countDigits(num)%2 == 0 {
-		str := strconv.Itoa(num)
-		left := str[0 : len(str)/2]
-		right := str[len(str)/2:]
-		return []int{utils.StringToInt(left), utils.StringToInt(right)}
+	digits := countDigits(num)
+	if digits%2 == 0 {
+		left, right := splitNumber(num, digits)
+		return []int{left, right}
 	}
 	return []int{num * 2024}
 }
 
+// splitNumber - Splits the number in two halves according to the digits
+func splitNumber(num int, digits int) (int, int) {
+	power := int(math.Pow10(digits / 2))
+	left := num / power
+	right := num % power
+	return left, right
+}
+
+// countDigits - Count digits fast
 func countDigits(i int) int {
 	if i < 10 {
 		return 1
@@ -65,17 +81,30 @@ func countDigits(i int) int {
 	if i < 10000 {
 		return 4
 	}
-	if i < 100000 {
-		return 5
-	}
 
-	count := 6
-	i = i / 1000000
-
+	count := 4
+	i = i / 10000
 	for i > 0 {
 		i = i / 10
 		count++
 	}
 
 	return count
+}
+
+// generateStoneMap - Generates a StoneMap according to the input
+func generateStoneMap(stones []int) StoneMap {
+	ret := make(StoneMap)
+	for _, stone := range stones {
+		ret[stone] = 1
+	}
+	return ret
+}
+
+// countStoneMap - Sums the stone values
+func countStoneMap(stoneMap StoneMap) (ret int) {
+	for _, stone := range stoneMap {
+		ret += stone
+	}
+	return ret
 }
