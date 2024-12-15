@@ -23,7 +23,7 @@ func Process() {
 		totalPrice2 += region.Area * region.Sides
 	}
 
-	fmt.Println("Day 11 Results")
+	fmt.Println("Day 12 Results")
 	fmt.Println("Part1", totalPrice1)
 	fmt.Println("Part2", totalPrice2)
 }
@@ -96,5 +96,80 @@ func calculatePerimeter(grid utils.Grid, region *Region) int {
 }
 
 func calculateSides(grid utils.Grid, region *Region) int {
-	return 0
+	sides := 0
+
+	// Helper func
+	isInRegion := func(pos utils.Vector) bool {
+		return utils.GridValidPosition(grid, pos) && grid[pos[1]][pos[0]] == region.PlantType
+	}
+
+	// UP
+	visited := make(map[utils.Vector]bool)
+	for _, plot := range region.Plots {
+		if !visited[plot] {
+			posUp := utils.VectorAdd(plot, utils.DirUp)
+			if !visited[plot] && !isInRegion(posUp) {
+				sides++
+				for x := plot[0]; isInRegion(utils.Vector{x, plot[1]}) && !isInRegion(utils.Vector{x, posUp[1]}); x++ {
+					visited[utils.Vector{x, plot[1]}] = true
+				}
+				for x := plot[0]; isInRegion(utils.Vector{x, plot[1]}) && !isInRegion(utils.Vector{x, posUp[1]}); x-- {
+					visited[utils.Vector{x, plot[1]}] = true
+				}
+			}
+		}
+	}
+
+	// Down
+	visited = make(map[utils.Vector]bool)
+	for _, plot := range region.Plots {
+		if !visited[plot] {
+			posDown := utils.VectorAdd(plot, utils.DirDown)
+			if !visited[plot] && !isInRegion(posDown) {
+				sides++
+				for x := plot[0]; isInRegion(utils.Vector{x, plot[1]}) && !isInRegion(utils.Vector{x, posDown[1]}); x++ {
+					visited[utils.Vector{x, plot[1]}] = true
+				}
+				for x := plot[0]; isInRegion(utils.Vector{x, plot[1]}) && !isInRegion(utils.Vector{x, posDown[1]}); x-- {
+					visited[utils.Vector{x, plot[1]}] = true
+				}
+			}
+		}
+	}
+
+	// LEFT
+	visited = make(map[utils.Vector]bool)
+	for _, plot := range region.Plots {
+		if !visited[plot] {
+			posLeft := utils.VectorAdd(plot, utils.DirLeft)
+			if !visited[plot] && !isInRegion(posLeft) {
+				sides++
+				for y := plot[1]; isInRegion(utils.Vector{plot[0], y}) && !isInRegion(utils.Vector{posLeft[0], y}); y++ {
+					visited[utils.Vector{plot[0], y}] = true
+				}
+				for y := plot[1]; isInRegion(utils.Vector{plot[0], y}) && !isInRegion(utils.Vector{posLeft[0], y}); y-- {
+					visited[utils.Vector{plot[0], y}] = true
+				}
+			}
+		}
+	}
+
+	// RIGHT
+	visited = make(map[utils.Vector]bool)
+	for _, plot := range region.Plots {
+		if !visited[plot] {
+			posRight := utils.VectorAdd(plot, utils.DirRight)
+			if !visited[plot] && !isInRegion(posRight) {
+				sides++
+				for y := plot[1]; isInRegion(utils.Vector{plot[0], y}) && !isInRegion(utils.Vector{posRight[0], y}); y++ {
+					visited[utils.Vector{plot[0], y}] = true
+				}
+				for y := plot[1]; isInRegion(utils.Vector{plot[0], y}) && !isInRegion(utils.Vector{posRight[0], y}); y-- {
+					visited[utils.Vector{plot[0], y}] = true
+				}
+			}
+		}
+	}
+
+	return sides
 }
