@@ -6,12 +6,18 @@ import (
 	"math"
 	"regexp"
 	"riemer/utils"
+	"sync"
 )
 
 type ClawMachine struct {
 	ButtonA utils.Vector
 	ButtonB utils.Vector
 	Prize   utils.Vector
+}
+
+type Result struct {
+	Tokens   int
+	Possible bool
 }
 
 var regexNumbers = regexp.MustCompile(`X[+=](\d+), Y[+=](\d+)`)
@@ -27,21 +33,56 @@ func Process() {
 		})
 	}
 
-	// Solve the machines
+	// Start a goroutine for every machine
+	results := make(chan [2]Result, len(machines))
+	var wg sync.WaitGroup
+	for _, machine := range machines {
+		wg.Add(1)
+		go solveMachineConcurrent(machine, results, &wg)
+	}
+
+	// Start a goroutine to wait for all results and close the channel
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	// Stream results and process them till it gets closed
 	totalTokens1 := 0
 	totalTokens2 := 0
-	for _, machine := range machines {
-		if tokens, possible := solveMachine(machine, false); possible {
-			totalTokens1 += tokens
+	for result := range results {
+		if result[0].Possible {
+			totalTokens1 += result[0].Tokens
 		}
-		if tokens, possible := solveMachine(machine, true); possible {
-			totalTokens2 += tokens
+		if result[1].Possible {
+			totalTokens2 += result[1].Tokens
 		}
 	}
 
 	fmt.Println("Day 13 Results")
 	fmt.Println("Part1", totalTokens1)
 	fmt.Println("Part2", totalTokens2)
+}
+
+// solveMachineConcurrent solves both parts parallel for one machine
+func solveMachineConcurrent(machine ClawMachine, results chan<- [2]Result, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	// Start goroutines for both parts
+	part1Chan := make(chan Result, 1)
+	go func() {
+		tokens, possible := solveMachine(machine, false)
+		part1Chan <- Result{tokens, possible}
+	}()
+
+	part2Chan := make(chan Result, 1)
+	go func() {
+		tokens, possible := solveMachine(machine, true)
+		part2Chan <- Result{tokens, possible}
+	}()
+
+	// Return results
+	results <- [2]Result{<-part1Chan, <-part2Chan}
 }
 
 // solveMachine try to find a solution for a machine
