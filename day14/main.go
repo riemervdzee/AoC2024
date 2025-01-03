@@ -11,7 +11,7 @@ var re = regexp.MustCompile(`p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)`)
 
 const gridWidth = 101
 const gridHeight = 103
-const seconds = 100
+const secondsPart1 = 100
 const gridWM = gridWidth / 2
 const gridHM = gridHeight / 2
 
@@ -23,32 +23,22 @@ type Robot struct {
 func Process() {
 	lines := utils.ReadFile("day14/input.txt")
 	robots := make([]Robot, 0, len(lines))
-	var quadrantsPart1 [4]int
 
-	// Read lines into robots and solve part 1
+	// Read lines into robots
 	for _, line := range lines {
-		// Get position, velocity and create a robot
 		matches := re.FindStringSubmatch(line)
-		p := utils.Vector{utils.StringToInt(matches[1]), utils.StringToInt(matches[2])}
-		v := utils.Vector{utils.StringToInt(matches[3]), utils.StringToInt(matches[4])}
-		robots = append(robots, Robot{p, v})
-
-		// Solve part 1
-		v100 := utils.Vector{v[0] * seconds, v[1] * seconds}
-		p1 := utils.VectorAdd(p, v100)
-		p1 = utils.Vector{modPositive(p1[0], gridWidth), modPositive(p1[1], gridHeight)}
-		if index, found := quadIndex(p1); found {
-			quadrantsPart1[index] = quadrantsPart1[index] + 1
-		}
+		robots = append(robots, Robot{
+			utils.Vector{utils.StringToInt(matches[1]), utils.StringToInt(matches[2])},
+			utils.Vector{utils.StringToInt(matches[3]), utils.StringToInt(matches[4])}},
+		)
 	}
 
-	fmt.Println("Day 14 Results")
-	fmt.Println("Part1", quadrantsPart1[0]*quadrantsPart1[1]*quadrantsPart1[2]*quadrantsPart1[3])
-
-	// For part 2 we try to find the lowest quadrant-score, this suggests there is a nice distribution of all points in each quadrant
-	safetyFactor := math.MaxInt64
-	foundSeconds := 0
+	// Just loop an X amount of times
+	part1 := 0
+	part2 := 0
+	safetyFactorP2 := math.MaxInt64
 	for i := 1; i < gridWidth*gridHeight; i++ {
+		// Move all robots and get quadrant scores
 		var quadrants [4]int
 		for i := range robots {
 			robots[i].pos = utils.VectorAdd(robots[i].pos, robots[i].vel)
@@ -58,14 +48,20 @@ func Process() {
 			}
 		}
 
+		// Part 1 and 2 handling
 		sf := quadrants[0] * quadrants[1] * quadrants[2] * quadrants[3]
-		if sf < safetyFactor {
-			safetyFactor = sf
-			foundSeconds = i
+		if i == secondsPart1 {
+			part1 = sf
+		}
+		if sf < safetyFactorP2 {
+			safetyFactorP2 = sf
+			part2 = i
 		}
 	}
 
-	fmt.Println("Part2", foundSeconds)
+	fmt.Println("Day 14 Results")
+	fmt.Println("Part1", part1)
+	fmt.Println("Part2", part2)
 }
 
 // quadIndex returns in which quadrant a position is inside
